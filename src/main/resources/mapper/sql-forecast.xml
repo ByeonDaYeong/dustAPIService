@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.mapper.ForecastAPIMapper">
+	<select id="selectForecast" resultType="com.example.demo.dto.ForecastAPIDto">
+		<![CDATA[ 
+			select 
+				forecastIdx
+				, dataTime 
+				, informCode 
+				, informOverall 
+				, informCause 
+				, informGrade
+				, imageUrl1
+				, imageUrl2 
+				, imageUrl3 
+				, imageUrl4
+				, imageUrl5
+				, imageUrl6 
+				, informData
+				, insertTime 
+			from t_forecast
+			ORDER BY datatime desc, forecastidx asc
+		]]>
+	</select>
+	
+	<!-- <insert id="insertForecast" parameterType="com.example.demo.dto.ForecastAPIDto">
+		<![CDATA[
+			INSERT INTO T_FORECAST(forecastIdx, dataTime , informCode , informOverall , informCause , informGrade
+									, imageUrl1, imageUrl2 , imageUrl3 , imageUrl4, imageUrl5, imageUrl6 , informData)
+			VALUES(forecastIdx_pk.nextval, #{dataTime}, #{informCode}, #{informOverall}, #{informCause}, #{informGrade}
+					, #{imageUrl1}, #{imageUrl2}, #{imageUrl3}, #{imageUrl4}, #{imageUrl5}, #{imageUrl6}, #{informGrade})
+		]]>
+	</insert> -->
+	
+	<!-- foreach 를 이용한 다중 insert -->
+	<!-- forecastIdx_pk.nextval + #{index} + 1 -->
+	<insert id="insertForecast" parameterType="com.example.demo.dto.ForecastAPIDto">
+		<foreach item="item" index="index" collection="list" separator=" " open="INSERT ALL " close="SELECT * FROM DUAL">
+			INTO T_FORECAST(forecastIdx, dataTime , informCode , informOverall , informCause , informGrade
+							, imageUrl1, imageUrl2 , imageUrl3 , imageUrl4, imageUrl5, imageUrl6 , informData)
+			VALUES ((SELECT max(forecastIdx) FROM t_forecast) + #{index} + 1, #{item.dataTime}, #{item.informCode}, #{item.informOverall}, #{item.informCause}, #{item.informGrade}
+					, #{item.imageUrl1}, #{item.imageUrl2}, #{item.imageUrl3}, #{item.imageUrl4}, #{item.imageUrl5}, #{item.imageUrl6}, #{item.informData})
+		</foreach>
+	</insert>
+</mapper>

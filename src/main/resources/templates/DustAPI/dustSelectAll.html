@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>Dust Select All</title>
+	<meta charset="utf-8">
+	<link href="css/style.css" rel="stylesheet" type="text/css"/>
+</head>
+<script type="text/javascript">
+</script>
+<body>
+	<div>
+		<h2>상세 조회 이력 리스트</h2>
+		<p>조회한 이력을 볼 수 있습니다.</p>
+	 	<table>
+			<colgroup>
+				<col width="10%"/>
+				<col width="8%"/>
+				<col width="10%"/>
+				<col width="3%"/>
+				
+				<col width="6%"/>
+				<col width="6%"/>
+				<col width="6%"/>
+				<col width="6%"/>
+				
+				<col width="8%"/>
+				<col width="8%"/>
+				<col width="8%"/>
+				<col width="8%"/>
+				
+			</colgroup>
+			<thead>
+				<tr>
+					<th scope="col">데이터 저장 일시</th>
+					<th scope="col">측정소명</th>
+					<th scope="col">측정 일시</th>
+					<th scope="col">스케줄링 YN</th>
+					
+					<th scope="col">미세먼지 농도</th>
+					<th scope="col">미세먼지 농도(24h)</th>
+					<th scope="col">초미세먼지 농도</th>
+					<th scope="col">초미세먼지 농도(24h)</th>
+					
+					<th scope="col">미세먼지 등급</th>
+					<th scope="col">미세먼지 등급(1h)</th>
+					<th scope="col">초미세먼지 등급</th>
+					<th scope="col">초미세먼지 등급(1h)</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:if="${#lists.size(dtoList)} > 0" th:each="dtoList : ${dtoList}">
+					<td th:text="${dtoList.schTime}"></td>
+					<td th:text="${dtoList.stationName}"></td>
+					<td th:text="${dtoList.dataTime}"></td>
+					<td th:switch="${dtoList.isAuto}">
+						<span th:case="0">X</span>
+						<span th:case="1">O</span>
+						<span th:case="*">X</span>
+					</td>
+					
+					<td th:text="${dtoList.pm10Value}"></td>
+					<td th:text="${dtoList.pm10Value24}"></td>
+					<td th:text="${dtoList.pm25Value}"></td>
+					<td th:text="${dtoList.pm25Value24}"></td>
+					
+					<td th:switch="${dtoList.pm10Grade}">
+						<span th:case="1">좋음(등급:1)</span>
+						<span th:case="2">보통(등급:2)</span>
+						<span th:case="3">나쁨(등급:3)</span>
+						<span th:case="4">매우나쁨(등급:4)</span>
+						<span th:case="*">0</span>
+					</td>
+					<td th:switch="${dtoList.pm10Grade1h}">
+						<span th:case="1">좋음(등급:1)</span>
+						<span th:case="2">보통(등급:2)</span>
+						<span th:case="3">나쁨(등급:3)</span>
+						<span th:case="4">매우나쁨(등급:4)</span>
+						<span th:case="*">0</span>
+					</td>
+					<td th:switch="${dtoList.pm25Grade}">
+						<span th:case="1">좋음(등급:1)</span>
+						<span th:case="2">보통(등급:2)</span>
+						<span th:case="3">나쁨(등급:3)</span>
+						<span th:case="4">매우나쁨(등급:4)</span>
+						<span th:case="*">0</span>
+					</td>
+					<td th:switch="${dtoList.pm25Grade1h}">
+						<span th:case="1">좋음(등급:1)</span>
+						<span th:case="2">보통(등급:2)</span>
+						<span th:case="3">나쁨(등급:3)</span>
+						<span th:case="4">매우나쁨(등급:4)</span>
+						<span th:case="*">0</span>
+					</td>
+					<!-- <td th:text="${dtoList.pm10Grade}"></td>
+					<td th:text="${dtoList.pm10Grade1h}"></td>
+					<td th:text="${dtoList.pm25Grade}"></td>
+					<td th:text="${dtoList.pm25Grade1h}"></td> -->
+				</tr>
+				<tr th:unless="${#lists.size(dtoList)} > 0">
+					<td colspan="11">조회하신 결과가 없습니다.</td>
+				</tr>
+			
+				<!-- <tr>
+					<td th:text="${dto.pm10Value}"></td>
+					<td th:switch="${dto.pm10Grade1h}">
+						<span th:case="1">좋음(등급:1)</span>
+						<span th:case="2">보통(등급:2)</span>
+						<span th:case="3">나쁨(등급:3)</span>
+						<span th:case="4">매우나쁨(등급:4)</span>
+					</td>
+					<td th:text="${dto.pm25Value}"></td>
+					<td th:switch="${dto.pm25Grade1h}">
+						<span th:case="1">좋음(등급:1)</span>
+						<span th:case="2">보통(등급:2)</span>
+						<span th:case="3">나쁨(등급:3)</span>
+						<span th:case="4">매우나쁨(등급:4)</span>
+					</td>
+				</tr> -->
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>

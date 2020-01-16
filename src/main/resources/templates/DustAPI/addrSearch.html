@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>Address Search POP UP</title>
+	<meta charset="utf-8">
+	<link href="css/style.css" rel="stylesheet" type="text/css"/>
+</head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript">
+
+/* 검색 버튼 클릭 이벤트 */
+function clickSch() {
+	//var data = $("form[name=sch]").serialize() ; //.serialize(): form 내 데이터를 queryString 형식으로 변환(ex:id=xxx&pw=xxx)
+	var data = $("#inputAddr").val();
+	var dongOrRoad = $("select[name=dongOrRoad]").val();
+	
+	// 재클릭 시 초기화
+	$("#tby").empty();	//empty():하위 Tag 삭제, remove():본인 Tag 삭제
+	
+	// 데이터 미 입력 시 
+	if (data.length <= 0) {
+		alert("검색할 주소를 입력해주세요.");
+		$("#inputAddr").focus();
+		return;
+	}
+	
+	//데이터 결과 동적 처리
+	$.ajax({
+		url:"/addr/"+data+"/"+dongOrRoad,
+		dataType: 'json',
+		type:'GET',
+		success:function(response){
+			var dynamicTable = "";
+			if (response.length > 0) {
+				response.map(function(response) {
+					dynamicTable += "<tr onclick='clickTr(this)' style='cursor:pointer;'>";
+					dynamicTable += "<td>" + response.zipNo + "</td>";
+					dynamicTable += "<td>" + response.lnmAdres + "</td>";
+					dynamicTable += "<td>" + response.rnAdres + "</td>";
+					dynamicTable += "</tr>";	
+				})
+			} else {
+				response.map(function(response) {
+					dynamicTable += "<tr>";
+					dynamicTable += "<td colspan='3'>조회된 결과가 없습니다.</td>";
+					dynamicTable += "</tr>";
+				})
+			} 
+			$("#tby").append(dynamicTable);
+		},error:function(a,b,c){
+			console.log(a,b,c);
+			alert("일치하는 주소가 없습니다. \n정확한 주소를 입력해주세요.");
+			$("#inputAddr").focus();
+		}
+	}); 
+}
+
+/* row Click Event : 해당 row 도로명 주소 추출  */
+function clickTr(trObj) {
+	var roadText = trObj.cells[1].innerText;
+	
+	var splitRoad = roadText.split(" ");
+	var arr1 = splitRoad[0];	//data ex) "경상남도", "서울특별시"...other...
+	var arr2 = splitRoad[1];	//data ex "김해시", "종로구", ...other...
+	
+	console.log(arr1 + arr2);
+	
+	//form 값 변경(값 전달) -> issue: 팝업 창 내에서 처리되는 문제 있음
+	//var frm = $("#frm")[0];
+	//$("#frm")[0].action = "/"
+	//$("#hdn")[0].value = arr1 + " " + arr2;
+	//$("#frm")[0].submit();
+	
+	var params = arr1 + "&" + arr2;
+	$(opener.location).attr("href", "http://localhost:8080/"+params);
+	window.self.close();
+}
+
+
+</script>
+<body>
+	<div>
+		<form id="sch" name="sch" >
+			<select id="dongOrRoad" name="dongOrRoad">
+				<option value="road">도로명</option>
+				<option value="dong">지번</option>
+			</select>
+			<input type="text" id="inputAddr" name="inputAddr" size="25">
+		  	<input type="button" value="검색" id="schBtn" name="schBtn" onClick="clickSch()">
+		</form>
+	</div>
+
+	<form id="frm" method="post">
+		<table id="tbl">
+			<colgroup>
+				<col width="20%"/>
+				<col width="40%"/>
+				<col width="40%"/>
+			</colgroup>
+			
+			<thead>
+				<tr>
+					<th scope="col">우편번호</th>
+					<th scope="col">도로명주소</th>
+					<th scope="col">지번주소</th>
+				</tr>
+			</thead>
+			
+			<tbody id="tby">
+				<!-- 동적 Row 추가 -->
+			</tbody>
+			
+		</table>
+	</form>
+</body>
+</html>

@@ -1,0 +1,29 @@
+@import url(//fonts.googleapis.com/earlyaccess/jejumyeongjo.css);
+table, th, td, h2, p, a {
+	font-family: 'Jeju Myeongjo', serif;
+}
+table, th, td {
+    border: 1px solid #bcbcbc;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 13px;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-left: auto;
+    margin-right: auto;
+}
+th, td {
+   padding: 10px;
+}
+thead tr {
+  background-color: #0d47a1;
+  color: #ffffff;
+}
+tbody tr:nth-child(2n) {
+  background-color: #bbdefb;
+}
+tbody tr:nth-child(2n+1) {
+  background-color: #e3f2fd;
+}

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>Dust Select All</title>
+	<meta charset="utf-8">
+	<link href="css/style.css" rel="stylesheet" type="text/css"/>
+</head>
+<script type="text/javascript">
+</script>
+<body>
+	<div>
+		<h2>미세먼지 예보 내역</h2>
+		<p>자동으로 미세먼지 예보 내용을 조회합니다.(예보 발표 시간: 05시, 11시, 17시, 23시)</p>
+	 	<table>
+			<colgroup>
+				<col width="8%"/>
+				<col width="8%"/>
+				<col width="20%"/>
+				<col width="40%"/>
+				<col width="40%"/>
+				<col width="10%"/>
+			</colgroup>
+			<!-- <colgroup>
+				<col width="16.6%"/>
+				<col width="16.6%"/>
+				<col width="16.6%"/>
+				<col width="16.6%"/>
+				<col width="16.6%"/>
+				<col width="16.6%"/>
+			</colgroup> -->
+			<thead>
+				<tr>
+					<th scope="col">예보 발표일</th>
+					<th scope="col">날짜</th>
+					<th scope="col">간략 내용</th>
+					<th scope="col">상세 내용</th>
+					<th scope="col">전 지역 미세먼지 등급</th>
+				</tr>
+				<tr>					
+					<th scope="col">Image1</th>
+					<th scope="col">Image2</th>
+					<th scope="col">Image3</th>
+					<th scope="col">Image4</th>
+					<th scope="col">Image5</th>
+					<th scope="col">Image6</th>
+				</tr>
+			</thead>
+			<tbody th:if="${#lists.size(dtoList)} > 0" th:each="dtoList : ${dtoList}">
+				<tr>
+					<td th:text="${dtoList.dataTime}"></td>
+					<td th:text="${dtoList.informData}"></td>
+					<td th:text="${dtoList.informOverall}"></td>
+					<td th:text="${dtoList.informCause}"></td>
+					<td th:text="${dtoList.informGrade}"></td>
+				</tr>
+				<tr>
+					<td><img th:src="${dtoList.imageUrl1}" alt="no image" style="width:160px;height:190px"/></td>
+					<td><img th:src="${dtoList.imageUrl2}" alt="no image" style="width:160px;height:190px"/></td>
+					<td><img th:src="${dtoList.imageUrl3}" alt="no image" style="width:160px;height:190px"/></td>
+					<td><img th:src="${dtoList.imageUrl4}" alt="no image" style="width:160px;height:190px"/></td>
+					<td><img th:src="${dtoList.imageUrl5}" alt="no image" style="width:160px;height:190px"/></td>
+					<td><img th:src="${dtoList.imageUrl6}" alt="no image" style="width:160px;height:190px"/></td>
+				</tr>
+			</tbody>
+			<tbody th:unless="${#lists.size(dtoList)} > 0">
+				<tr>
+					<td colspan="11">예보 내용이 없습니다.</td>
+				</tr> 
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>

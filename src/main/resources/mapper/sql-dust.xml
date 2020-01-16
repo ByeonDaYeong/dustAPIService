@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.mapper.DustAPIMapper">
+	<select id="selectTest" resultType="int">
+		<![CDATA[
+			SELECT 1
+			from dual
+		]]>
+	</select>
+	
+	
+	<insert id="insertDust" parameterType="com.example.demo.dto.DustAPIDto">
+		<![CDATA[
+			insert into t_dust(dustIdx, stationName, dataTime,
+								pm10Value, pm10Value24, pm25Value, pm25Value24,
+								pm10Grade, pm10Grade1h, pm25Grade, pm25Grade1h, isAuto)
+				VALUES((SELECT max(dustIdx)+1 FROM t_dust), #{stationName}, #{dataTime},
+								#{pm10Value}, #{pm10Value24}, #{pm25Value}, #{pm25Value24},
+								#{pm10Grade}, #{pm10Grade1h}, #{pm25Grade}, #{pm25Grade1h}, #{isAuto})
+		]]>
+	</insert>
+	
+	
+	<select id="selectAllDust" resultType="com.example.demo.dto.DustAPIDto">
+		<![CDATA[
+			select 
+				stationName
+				, datatime
+				, pm10value
+				, pm10value24
+				, pm25value
+				, pm25value24
+				, pm10grade
+				, pm10grade1h
+				, pm25grade
+				, pm25grade1h
+				, schtime
+				, isAuto
+			from t_dust
+			order by schtime desc
+		]]>
+	</select>
+	
+	
+	<select id="selectChartData" parameterType="String" resultType="com.example.demo.dto.DustAPIDto">
+		<![CDATA[
+			SELECT A.*
+			FROM (
+				SELECT 
+					datatime
+					, pm10value
+					, pm25value
+				FROM t_dust
+				WHERE STATIONNAME = #{value}
+				GROUP BY datatime, pm10value, pm25value
+				ORDER BY DATATIME asc
+			) A
+			WHERE rownum <= 10
+		]]>
+	</select>
+	
+	
+	<!-- 스케줄러로 요청된 데이터 저장 -->
+	<insert id="insertDustScheduler" parameterType="com.example.demo.dto.DustAPIDto">
+		<foreach item="item" index="index" collection="list" separator=" " open="INSERT ALL " close="SELECT * FROM DUAL">
+			INTO T_DUST(dustIdx, stationName, dataTime,
+						pm10Value, pm10Value24, pm25Value, pm25Value24,
+						pm10Grade, pm10Grade1h, pm25Grade, pm25Grade1h, isAuto)
+			VALUES((SELECT max(dustIdx) FROM t_dust) + #{index} + 1, #{item.stationName}, #{item.dataTime},
+					#{item.pm10Value}, #{item.pm10Value24}, #{item.pm25Value}, #{item.pm25Value24},
+					#{item.pm10Grade}, #{item.pm10Grade1h}, #{item.pm25Grade}, #{item.pm25Grade1h}, #{item.isAuto})
+		</foreach>
+	</insert>
+</mapper>

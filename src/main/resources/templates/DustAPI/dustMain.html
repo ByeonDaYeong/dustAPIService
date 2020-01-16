@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Dust</title>
+<meta charset="utf-8">
+<link href="css/style.css" rel="stylesheet" type="text/css"/>
+</head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript">
+	//주소 검색 시 POP UP Function
+	function openAddrPopup() {
+		var url = "http://localhost:8080/popUpAddr/";
+		var option = "width=650, height=500, resizable=no";
+		window.open(url, "주소 검색창", option);
+	}
+</script>
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+<script th:inline="javascript"> //type="text/javascript">
+var dto = [[${dto}]];
+console.log(dto);
+
+if (dto != null) {
+	google.charts.load('current', {'packages':['corechart']});
+	google.charts.setOnLoadCallback(drawChart);
+	       
+	function drawChart() {
+		var paramArr = [];
+		var stationName = $("#stationName").val();
+		console.log(stationName);
+		paramArr.push(['TIME', 'PM10', 'PM25']);
+	 	$.ajax({
+	 		url: "/dustChart/" + dto.stationName,
+			dataType:'json',
+			async: false,
+			success:function(response) {
+				response.map(function(val) {
+					var formData = val.dataTime.substr(5,2) + "-" + val.dataTime.substr(8,2) + " " + val.dataTime.substr(11,5);
+					paramArr.push([formData, val.pm10Value, val.pm25Value]);
+				})
+			}, error: function(a,b,c) {
+				console.log('chart ajax error');
+			}
+		});
+		var data = google.visualization.arrayToDataTable(paramArr);
+	
+		var options = {
+			title: "[" + dto.stationName + "] 최근 미세먼지 추이",
+		    curveType: 'function',
+		    legend: { position: 'bottom' }
+		};
+	
+		var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+		chart.draw(data, options);
+	}
+}
+</script>
+<body>
+	<div>
+		<form id="addr" name="addr" action="/openAddr/">
+			<input type="hidden" id="stationName" name="stationName" value="${dto.stationName}"> 
+		  	<input type="button" value="주소 검색" onClick="openAddrPopup()">
+		</form>
+	</div>
+
+	<div th:if = "${dto != null}">
+		<h2 id="h2"><span th:text="${dto.stationName}"></span>의 미세먼지</h2>
+		<p>측정일시: <span th:text="${dto.dataTime}"></span></p>
+	 	<table>
+			<colgroup>
+				<col width="25%"/>
+				<col width="25%"/>
+				<col width="25%"/>
+				<col width="25%"/>
+			</colgroup>
+			<thead>
+				<tr>
+					<th scope="col">미세먼지 측정농도</th>
+					<th scope="col">미세먼지 등급(1h)</th>
+					<th scope="col">초미세먼지 측정농도</th>
+					<th scope="col">초미세먼지 등급(1h)</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td th:text="${dto.pm10Value}"></td>
+					<td th:switch="${dto.pm10Grade1h}">
+						<span th:case="1">좋음(등급:1)</span>
+						<span th:case="2">보통(등급:2)</span>
+						<span th:case="3">나쁨(등급:3)</span>
+						<span th:case="4">매우나쁨(등급:4)</span>
+					</td>
+					<td th:text="${dto.pm25Value}"></td>
+					<td th:switch="${dto.pm25Grade1h}">
+						<span th:case="1">좋음(등급:1)</span>
+						<span th:case="2">보통(등급:2)</span>
+						<span th:case="3">나쁨(등급:3)</span>
+						<span th:case="4">매우나쁨(등급:4)</span>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		
+		<!-- Chart (현재는 중구인 경우만 나옴) -->
+		<div id="curve_chart" style="width: 1000px; height: 500px"></div>
+		
+	</div>
+	<div th:unless = "${dto != null}">
+		<h2> 조회할 주소를 선택해주세요 :) </h2>
+	</div>
+	<a href="/dustSelectAll">상세조회 이력 보기</a>
+	<a href="/forecast">미세먼지 예보 내용 보기</a>
+</body>
+</html>
